@@ -2,9 +2,9 @@
 import pika
 import sys
 import meteo_utils
+
 import pickle
 import datetime
-
 
 # Establecer Conexión
 connection = pika.BlockingConnection(
@@ -13,25 +13,20 @@ channel = connection.channel()
 
 channel.queue_declare(queue='meteo')
 
-
-class RawMeteoData:
-      def __init__(self, tipo, co2, time):
-         self.tipo = tipo
-         self.co2 = co2
-         self.time = time
-
-
-
-#RAW_METEO_DATA
+#Objeto MeteoDataDetector
 air = meteo_utils.MeteoDataDetector()
+
+#Datos polución
 meteo_data = air.analyze_pollution()
 
+#Guardar datos de meteo_data en variables
 tipo = "pollution"
 co2 = meteo_data.get('co2')
 time = datetime.datetime.now()
 time = time.strftime("%Y-%m-%d %H:%M:%S")
 
-raw_meteo_data = RawMeteoData(tipo, co2, time)
+#Construir objeto RawPollutionData
+raw_meteo_data = meteo_utils.RawPollutionData(tipo, co2, time)
 
 message = pickle.dumps(raw_meteo_data)
 
@@ -39,6 +34,6 @@ channel.basic_publish(exchange='',
                       routing_key='meteo',
                       body= message)
 
-print(" [x] Sent %r" % str(raw_meteo_data))
+print(" [x] Sent. Type: %s, CO2: %s, Time: %s" % (raw_meteo_data.tipo, raw_meteo_data.co2, raw_meteo_data.time))
 
 connection.close()

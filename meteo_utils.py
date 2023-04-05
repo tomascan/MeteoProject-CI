@@ -22,6 +22,21 @@ MIN_PROCESS_TIME = 0.5
 MAX_PROCESS_TIME = 3.5
 
 
+class RawMeteoData:
+      def __init__(self, tipo, temperature, humidity, time):
+         self.tipo = tipo
+         self.temperature = temperature
+         self.humidity = humidity
+         self.time = time
+
+
+class RawPollutionData:
+      def __init__(self, tipo, co2, time):
+         self.tipo = tipo
+         self.co2 = co2
+         self.time = time
+
+
 class MeteoDataDetector:
     """
     Simulates an air conditions detector.

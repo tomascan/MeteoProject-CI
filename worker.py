@@ -3,9 +3,6 @@ import pika, sys, os
 import time
 import meteo_utils
 import pickle
-from wellnessSensor import RawMeteoData
-from pollutionSensor import RawMeteoData
-
 import redis
 
 redis_host = "localhost"
@@ -28,12 +25,12 @@ def main():
         if data_queue.tipo == 'wellness':
             air_wellness = meteo_utils.MeteoDataProcessor()
             wellness = air_wellness.process_meteo_data(data_queue)
-            r_client.rpush('wellnes', f'({data_queue.time} : {wellness})')
+            r_client.rpush('wellness', f'({data_queue.time} : {wellness})')
 
         else:
             air_pollution = meteo_utils.MeteoDataProcessor()
             pollution = air_pollution.process_pollution_data(data_queue)
-            r_client.rpush('pollut', f'({data_queue.time} : {pollution})')
+            r_client.rpush('pollution', f'({data_queue.time} : {pollution})')
 
         # time.sleep(body.count(b'.'))
         print(" [x] Done")
@@ -50,7 +47,7 @@ if __name__ == '__main__':
     try:
         main()
     except KeyboardInterrupt:
-        print('Interrupted')
+        print('\nInterrupted')
         try:
             sys.exit(0)
         except SystemExit:
